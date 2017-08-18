@@ -33,6 +33,16 @@
 			<h2>
 				<span th:text="'Message: ' + ${message}"></span>
 			</h2>
+			<ul>
+				<th:block th:each="file : ${filenames}">
+					<div th:each="date,chipId : ${#strings.arraySplit(file, '_')}">
+					<li><a href='#' th:href="${baseUrl}+'/'+${chipId.current}+'/'+${file}"><span th:text="${file}" th:remove="tag"></span></a> | 
+					<a href='#' th:href="${baseUrl}+'/'+${chipId.current}+'/'+${#strings.replace(file,'.txt','.json')}">json</a> | 
+					<a href='#' th:href="${baseUrl}+'/'+${chipId.current}+'/'+${#strings.replace(file,'.txt','.xml')}">xml</a> |
+					<a href='#' th:href="${baseUrl}+'/'+${chipId.current}+'/'+${#strings.replace(file,'.txt','.chart')}">chart</a></li>
+					</div>
+				</th:block>
+			</ul>
 		</div>
 
 	</div>

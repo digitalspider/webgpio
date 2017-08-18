@@ -30,14 +30,13 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import au.com.digitalspider.webgpio.bean.Esp8266Data;
-import au.com.digitalspider.handler.AbstractOutputHandler;
+import au.com.digitalspider.webgpio.handler.AbstractOutputHandler;
 
 /**
  * Hello world!
  *
  */
-public class Util
-{
+public class Util {
 	private static final Logger log = Logger.getLogger(Util.class);
 
 	public static String[] getPathParts(HttpServletRequest req) {
@@ -50,18 +49,18 @@ public class Util
 		String uri = req.getRequestURI(); // /gpio/4/direction
 		String url = req.getRequestURL().toString(); // http://vittor-desktop:8111/gpio/4/direction
 
-		if (path3!=null) {
+		if (path3 != null) {
 			return path3.substring(1).split("/");
 		}
 		return new String[0];
 	}
 
 	public static void writeError(HttpServletRequest request, HttpServletResponse response, String content) throws IOException {
-		PrintWriter out=response.getWriter();
+		PrintWriter out = response.getWriter();
 		out.println("<html><body>");
 		out.println("<h2><a href='/'>Home</a> | <a href='/gpio'>WebGpio</a> | <a href='/esp8266'>Esp8266</a></h2>");
 		out.println("<p><h1>Error has occurred!</h1></p>");
-		out.println("<p><b>"+content+"</b></p>");
+		out.println("<p><b>" + content + "</b></p>");
 		out.println("</body></html>");
 	}
 
@@ -70,7 +69,7 @@ public class Util
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		String stackTrace = sw.toString();
-		writeError(request,response,stackTrace.replace(System.getProperty("line.separator"), "<br/>\n"));
+		writeError(request, response, stackTrace.replace(System.getProperty("line.separator"), "<br/>\n"));
 	}
 
 	/**
@@ -84,12 +83,12 @@ public class Util
 		List<File> configFiles = new ArrayList<File>();
 		String fileContextPath = servletConfig.getServletContext().getRealPath("/");
 		String configFileNameValue = servletConfig.getInitParameter(propertyName);
-		log.info("configFileNameValue="+configFileNameValue);
+		log.info("configFileNameValue=" + configFileNameValue);
 		String[] configFileNames = configFileNameValue.split(",");
 		for (String configFileName : configFileNames) {
-			File file = new File(fileContextPath,configFileName);
+			File file = new File(fileContextPath, configFileName);
 			if (file.exists()) {
-				log.info("file="+file.getAbsolutePath());
+				log.info("file=" + file.getAbsolutePath());
 				configFiles.add(file);
 			}
 		}
@@ -112,7 +111,7 @@ public class Util
 			props.load(new FileReader(file));
 		}
 		String fileContextPath = servletConfig.getServletContext().getRealPath("/");
-		for (Entry<Object,Object> prop : props.entrySet()) {
+		for (Entry<Object, Object> prop : props.entrySet()) {
 			if (prop.getValue().toString().contains("${CONTEXTDIR}")) {
 				prop.setValue(prop.getValue().toString().replace("${CONTEXTDIR}", fileContextPath));
 			}
@@ -143,10 +142,10 @@ public class Util
 	 * @return
 	 * @throws IOException
 	 */
-	public static Map<String,List<AbstractOutputHandler>> setupHandlers(ServletConfig servletConfig) throws Exception {
+	public static Map<String, List<AbstractOutputHandler>> setupHandlers(ServletConfig servletConfig) throws Exception {
 		List<File> files = getConfigFiles(servletConfig, "handler.config");
-		Map<String,List<AbstractOutputHandler>> handlerMap = new HashMap<String, List<AbstractOutputHandler>>();
-		for (File file: files) {
+		Map<String, List<AbstractOutputHandler>> handlerMap = new HashMap<String, List<AbstractOutputHandler>>();
+		for (File file : files) {
 			handlerMap.putAll(readHandlerConfigFile(file));
 		}
 		return handlerMap;
@@ -159,7 +158,7 @@ public class Util
 //		System.out.println("request.getQueryString()="+request.getQueryString());
 //		System.out.println("request.getRequestURL()="+request.getRequestURL());
 		String url = request.getRequestURL().toString();
-		String baseUrl = url.substring(0, url.indexOf("/",9));
+		String baseUrl = url.substring(0, url.indexOf("/", 9));
 		baseUrl = baseUrl + request.getServletPath();
 //		System.out.println("baseUrl="+baseUrl);
 		return baseUrl;
@@ -176,14 +175,15 @@ public class Util
 				while ((line = input.readLine()) != null) {
 					contents.append(line);
 					contents.append("<br/>");
-					if (++i >= linesToRead)
+					if (++i >= linesToRead) {
 						break;
+					}
 				}
 			} finally {
 				input.close();
 			}
 		} catch (IOException ex) {
-			log.error(ex,ex);
+			log.error(ex, ex);
 		}
 
 		return contents.toString();
@@ -191,26 +191,26 @@ public class Util
 
 	public static String executeLinuxCmd(String cmd) throws IOException {
 		String[] cmdArray = { "/bin/sh", "-c", cmd };
-		log.debug("cmd="+cmdArray[2]);
+		log.debug("cmd=" + cmdArray[2]);
 		Process p = Runtime.getRuntime().exec(cmdArray);
-	    String output = IOUtils.toString(p.getInputStream());
-	    log.debug("output="+output);
-	    return output;
+		String output = IOUtils.toString(p.getInputStream());
+		log.debug("output=" + output);
+		return output;
 	}
 
 	public static InputStream executeLinuxCmdAsStream(String cmd) throws IOException {
 		String[] cmdArray = { "/bin/sh", "-c", cmd };
-		log.debug("cmd="+cmdArray[2]);
+		log.debug("cmd=" + cmdArray[2]);
 		Process p = Runtime.getRuntime().exec(cmdArray);
-	    return p.getInputStream();
+		return p.getInputStream();
 	}
 
 	public static int getLinesCountForFile(File readFile) throws Exception {
-		String cmd = "wc -l " + readFile+" | cut -f 1 -d ' '";
-	    String output = executeLinuxCmd(cmd);
-	    if (output.trim().length()>0) {
-	    	return Integer.parseInt(output.trim());
-	    }
+		String cmd = "wc -l " + readFile + " | cut -f 1 -d ' '";
+		String output = executeLinuxCmd(cmd);
+		if (output.trim().length() > 0) {
+			return Integer.parseInt(output.trim());
+		}
 		return 0;
 	}
 
@@ -218,21 +218,21 @@ public class Util
 		List<String> content = new ArrayList<String>();
 		InputStream is = null;
 		try {
-			String cmd = "tail -" + linesToRead + " "+readFile+" | head -"+batchSize;
+			String cmd = "tail -" + linesToRead + " " + readFile + " | head -" + batchSize;
 			is = executeLinuxCmdAsStream(cmd);
 			BufferedReader input = new BufferedReader(new java.io.InputStreamReader(is));
 			String line = null;
 			while ((line = input.readLine()) != null) {
-				content.add(0,line);
+				content.add(0, line);
 			}
 		} catch (java.io.IOException e) {
-			log.error(e,e);
+			log.error(e, e);
 		} finally {
-			if (is!=null) {
+			if (is != null) {
 				try {
 					is.close();
 				} catch (IOException e) {
-					log.error(e,e);
+					log.error(e, e);
 				}
 			}
 		}
@@ -255,77 +255,78 @@ public class Util
 	 * 	</sensor>
 	 * </handlers>
 	 * }
+	 * 
 	 * @param file
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String,List<AbstractOutputHandler>> readHandlerConfigFile(File file) throws Exception {
-		Map<String,List<AbstractOutputHandler>> handlersMap = new HashMap<String, List<AbstractOutputHandler>>();
+	public static Map<String, List<AbstractOutputHandler>> readHandlerConfigFile(File file) throws Exception {
+		Map<String, List<AbstractOutputHandler>> handlersMap = new HashMap<>();
 
 		SAXReader reader = new SAXReader();
 		Document doc = reader.read(file);
 		Element root = doc.getRootElement();
 		String eleName = root.getName();
-		if (eleName==null || !eleName.equals("handlers")) {
-			throw new Exception("Invalid XML. Root element is not called <handlers>, but <"+eleName+">");
+		if (eleName == null || !eleName.equals("handlers")) {
+			throw new Exception("Invalid XML. Root element is not called <handlers>, but <" + eleName + ">");
 		}
 
-		for ( Iterator<Element> sensorElements = root.elementIterator(); sensorElements.hasNext(); ) {
+		for (Iterator<Element> sensorElements = root.elementIterator(); sensorElements.hasNext();) {
 			Element sensorElement = sensorElements.next();
 			eleName = sensorElement.getName();
-			if (eleName==null || !eleName.equals("sensor")) {
-				throw new Exception("Invalid XML. Element is not called <sensor>, but <"+eleName+">");
+			if (eleName == null || !eleName.equals("sensor")) {
+				throw new Exception("Invalid XML. Element is not called <sensor>, but <" + eleName + ">");
 			}
 			String type = sensorElement.attributeValue("type");
 
 			List<AbstractOutputHandler> handlers = new ArrayList<AbstractOutputHandler>();
 			handlersMap.put(type, handlers);
 
-			for ( Iterator<Element> handlerElements = sensorElement.elementIterator(); handlerElements.hasNext(); ) {
+			for (Iterator<Element> handlerElements = sensorElement.elementIterator(); handlerElements.hasNext();) {
 				Element handlerElement = handlerElements.next();
 				eleName = handlerElement.getName();
-				if (eleName==null || !eleName.equals("handler")) {
-					throw new Exception("Invalid XML. Element is not called <handler>, but <"+eleName+">");
+				if (eleName == null || !eleName.equals("handler")) {
+					throw new Exception("Invalid XML. Element is not called <handler>, but <" + eleName + ">");
 				}
 
 				// Get name and class attributes
 				String handlerName = null;
 				String handlerClassName = null;
 				AbstractOutputHandler handler = null;
-				for (Iterator<Attribute> handlerAttributes = handlerElement.attributeIterator(); handlerAttributes.hasNext(); ) {
+				for (Iterator<Attribute> handlerAttributes = handlerElement.attributeIterator(); handlerAttributes.hasNext();) {
 					Attribute att = handlerAttributes.next();
 					if (att.getName().equals("name")) {
 						handlerName = att.getValue();
 					}
 					else if (att.getName().equals("class")) {
-						handlerClassName=att.getValue();
+						handlerClassName = att.getValue();
 					}
 				}
-				if (handlerName==null || handlerName.trim().length()==0 || handlerClassName==null || handlerClassName.trim().length()==0 ) {
+				if (handlerName == null || handlerName.trim().length() == 0 || handlerClassName == null || handlerClassName.trim().length() == 0) {
 					throw new Exception("handler does not have the required name='' and class='' attributes defined");
 				}
 				// Create new handler
 				Class<?> clazz = Class.forName(handlerClassName);
 				handler = (AbstractOutputHandler) clazz.newInstance();
 				if (handler == null) {
-					throw new Exception("handler name="+handlerName+", class="+handlerClassName+" could not be initialised");
+					throw new Exception("handler name=" + handlerName + ", class=" + handlerClassName + " could not be initialised");
 				}
 				handler.setName(handlerName);
 				handlers.add(handler);
-				log.debug("Handler created "+handler);
+				log.debug("Handler created " + handler);
 
-				for (Iterator<Element> paramElements = handlerElement.elementIterator(); paramElements.hasNext(); ) {
+				for (Iterator<Element> paramElements = handlerElement.elementIterator(); paramElements.hasNext();) {
 					Element paramElement = paramElements.next();
 					eleName = paramElement.getName();
-					if (eleName==null || !eleName.equals("param")) {
-						throw new Exception("Invalid XML. Element is not called <param>, but <"+eleName+">");
+					if (eleName == null || !eleName.equals("param")) {
+						throw new Exception("Invalid XML. Element is not called <param>, but <" + eleName + ">");
 					}
 
 					String paramName = paramElement.attributeValue("name");
 					String paramValue = paramElement.getStringValue();
-					if (paramName!=null && paramName.trim().length()>0 && paramValue!=null && paramValue.trim().length()>0 ) {
-						log.debug("  with property "+paramName+"="+paramValue);
-						handler.getProperties().put(paramName,paramValue);
+					if (paramName != null && paramName.trim().length() > 0 && paramValue != null && paramValue.trim().length() > 0) {
+						log.debug("  with property " + paramName + "=" + paramValue);
+						handler.getProperties().put(paramName, paramValue);
 					}
 				}
 			}
@@ -335,8 +336,8 @@ public class Util
 
 	public static VelocityContext getDefaultVelocityContext() {
 		VelocityContext context = new VelocityContext();
-		context.put( Integer.class.getSimpleName(), Integer.class );
-		context.put( Float.class.getSimpleName(), Float.class );
+		context.put(Integer.class.getSimpleName(), Integer.class);
+		context.put(Float.class.getSimpleName(), Float.class);
 		return context;
 	}
 
@@ -350,11 +351,11 @@ public class Util
 
 	public static String getHost(String url) {
 		int startIndex = url.indexOf("://");
-		if (startIndex>0) {
-			startIndex+=3;
-			int endIndex = url.indexOf("/",startIndex);
-			if (endIndex>startIndex) {
-				String currentHost = url.substring(startIndex,endIndex);
+		if (startIndex > 0) {
+			startIndex += 3;
+			int endIndex = url.indexOf("/", startIndex);
+			if (endIndex > startIndex) {
+				String currentHost = url.substring(startIndex, endIndex);
 				return currentHost;
 			}
 		}
@@ -363,17 +364,17 @@ public class Util
 
 	public static String getTextFileName(String filename) {
 		int index = filename.lastIndexOf(".");
-		filename = filename.substring(0,index);
-		return filename+".txt";
+		filename = filename.substring(0, index);
+		return filename + ".txt";
 	}
 
 	public static String getFileExtension(String filename) {
 		int index = filename.lastIndexOf(".");
-		return filename.substring(index+1);
+		return filename.substring(index + 1);
 	}
 
 	public static String firstCharUpperCase(String input) {
-		return input.substring(0, 1).toUpperCase()+input.substring(1);
+		return input.substring(0, 1).toUpperCase() + input.substring(1);
 	}
 
 	public static List<Esp8266Data> mapLinesToDataPoints(List<String> rawContentList) {
@@ -385,30 +386,39 @@ public class Util
 	}
 
 	public static Esp8266Data mapLineToDataPoint(String line) {
-		String[] lineParts = line.replace("\n","").split("\\|");
-		Esp8266Data dataPoint = new Esp8266Data();
-		for (int i=0; i<lineParts.length; i++) {
-			switch(i) {
-				case 0: dataPoint.date=lineParts[i]; break;
-				case 1: dataPoint.time=lineParts[i]; break;
-				case 2: dataPoint.ip=lineParts[i]; break;
-				case 3: dataPoint.heap=lineParts[i]; break;
-				case 4: dataPoint.value=lineParts[i]; break;
+		String[] lineParts = line.replace("\n", "").split("\\|");
+		Esp8266Data espData = new Esp8266Data();
+		for (int i = 0; i < lineParts.length; i++) {
+			switch (i) {
+			case 0:
+				espData.setDate(lineParts[i]);
+				break;
+			case 1:
+				espData.setTime(lineParts[i]);
+				break;
+			case 2:
+				espData.setIpAddress(lineParts[i]);
+				break;
+			case 3:
+				espData.setHeapDump(lineParts[i]);
+				break;
+			case 4:
+				espData.setValue(lineParts[i]);
+				break;
 			}
-			if (i>4) {
-				dataPoint.values.add(lineParts[i]);
+			if (i > 4) {
+				espData.getValues().add(lineParts[i]);
 			}
 		}
-		return dataPoint;
+		return espData;
 	}
 
-    public static void main( String[] args )
-    {
-        try {
-        	log.info( "Hello World!" );
+	public static void main(String[] args) {
+		try {
+			log.info("Hello World!");
 		} catch (Exception e) {
-			log.error(e,e);
+			log.error(e, e);
 		}
-    }
+	}
 
 }
