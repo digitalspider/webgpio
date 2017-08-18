@@ -33,6 +33,21 @@
 			<h2>
 				<span th:text="'Message: ' + ${message}"></span>
 			</h2>
+
+			<p>Pin=<b th:text="${pin}">{pin}</b> and PinRequest=<b th:text="${pinRequest}">{pinRequest}</b></p>
+			<p>Action was to set <b th:text="${action}">N/A</b></p>
+			<h1>PINS</h1>
+			<table border='1'>
+				<tr>
+					<th:block th:each="modelPin : ${modelPins}">
+					<td>
+						<div th:strong="${modelPin.selected}">
+							Pin=<span th:text="${modelPin.pinId}">{pinId}</span> [<span th:text="${modelPin.mode}">{mode}</span>] [<a href="#" th:href="/webgpio/{model.pinId}/toggle"><span th:text="${modelPin.state}">{state}</span></a>] [<span th:text="${modelPin.edge}">{edge}</span>]
+						</div>
+					</td>
+					</th:block>
+				</tr>
+			</table>
 		</div>
 
 	</div>
