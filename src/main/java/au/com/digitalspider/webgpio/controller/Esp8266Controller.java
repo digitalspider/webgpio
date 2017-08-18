@@ -3,6 +3,7 @@ package au.com.digitalspider.webgpio.controller;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +57,19 @@ public class Esp8266Controller {
 			@PathParam(value = "chipId") String chipId,
 			@PathParam(value = "type") String type,
 			@PathParam(value = "heapDump") String heapDump,
-			@PathParam(value = "data") String data) throws Exception {
-
-		Esp8266Data espData = new Esp8266Data();
-		espData.setChipId(chipId);
-		espData.setData(data);
-		espData.setHeapDump(heapDump);
-		espData.setType(type);
+			@PathParam(value = "data") String data,
+			HttpServletRequest request) throws Exception {
 
 		String date = WebgpioConstants.dateFormatYYYYMMDD.format(new Date());
+		String time = WebgpioConstants.dateFormatHHMM.format(new Date());
+
+		Esp8266Data espData = new Esp8266Data();
+		espData.setDate(date);
+		espData.setTime(time);
+		espData.setIpAddress(request.getRemoteAddr());
+		espData.setData(data);
+		espData.setHeapDump(heapDump);
+
 		String chipName = chipId + "_" + date;
 		String fileName = WebgpioConstants.ESP_DATA_DIR + "/" + chipName;
 		Resource resource = new FileSystemResource(fileName);

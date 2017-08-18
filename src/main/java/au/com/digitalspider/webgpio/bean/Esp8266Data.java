@@ -2,22 +2,39 @@ package au.com.digitalspider.webgpio.bean;
 
 public class Esp8266Data {
 
-	private String chipId;
+	private String date;
+	private String time;
+	private String ipAddress;
 	private String heapDump;
 	private String data;
-	private String type;
 
 	@Override
 	public String toString() {
-		return "Esp8266Data [chipId=" + chipId + ", heapDump=" + heapDump + ", type=" + type + ", data=" + data + "]";
+		return "Esp8266Data [date=" + date + ", time=" + time + ", ipAddress=" + ipAddress + ", heapDump=" + heapDump + ", data=" + data + "]";
 	}
 
-	public String getChipId() {
-		return chipId;
+	public String getDate() {
+		return date;
 	}
 
-	public void setChipId(String chipId) {
-		this.chipId = chipId;
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 
 	public String getHeapDump() {
@@ -36,11 +53,4 @@ public class Esp8266Data {
 		this.data = data;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
 }
