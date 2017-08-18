@@ -71,7 +71,7 @@ public class Esp8266Controller {
 		espData.setDate(date);
 		espData.setTime(time);
 		espData.setIpAddress(request.getRemoteAddr());
-		espData.setData(data);
+		espData.setValue(data);
 		espData.setHeapDump(heapDump);
 
 		String chipName = chipId + "_" + date;

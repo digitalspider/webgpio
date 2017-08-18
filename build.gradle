@@ -30,7 +30,12 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:1.5.6.RELEASE")
     compile("org.springframework.boot:spring-boot-starter-spring-boot-devtools:1.5.6.RELEASE")
     compile("org.webjars:bootstrap:3.3.7")
+    compile("org.apache.velocity:velocity:1.7")
+    compile("commons-io:commons-io:2.4")
+    compile("com.google.code.gson:gson:2.5")
+    compile("org.apache.httpcomponents:httpclient:4.5.1")
+    compile("com.pi4j:pi4j-core:1.1")
+    compile("dom4j:dom4j:1.6.1")
     testCompile("org.springframework.boot:spring-boot-starter-test:1.5.6.RELEASE")
     testCompile("junit:junit")
 }
-

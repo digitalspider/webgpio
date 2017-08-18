@@ -1,16 +1,20 @@
 package au.com.digitalspider.webgpio.bean;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class Esp8266Data {
 
 	private String date;
 	private String time;
 	private String ipAddress;
 	private String heapDump;
-	private String data;
+	private String value;
+	private List<String> values = new ArrayList<>();
 
 	@Override
 	public String toString() {
-		return "Esp8266Data [date=" + date + ", time=" + time + ", ipAddress=" + ipAddress + ", heapDump=" + heapDump + ", data=" + data + "]";
+		return "Esp8266Data [date=" + date + ", time=" + time + ", ipAddress=" + ipAddress + ", heapDump=" + heapDump + ", value=" + value + "]";
 	}
 
 	public String getDate() {
@@ -45,12 +49,20 @@ public class Esp8266Data {
 		this.heapDump = heapDump;
 	}
 
-	public String getData() {
-		return data;
+	public String getValue() {
+		return value;
 	}
 
-	public void setData(String data) {
-		this.data = data;
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public List<String> getValues() {
+		return values;
+	}
+
+	public void setValues(List<String> values) {
+		this.values = values;
 	}
 
 }
