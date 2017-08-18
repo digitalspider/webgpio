@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,6 +16,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,35 +51,46 @@ public class Esp8266Controller implements InitializingBean {
 		return "esp8266"; // Thymeleaf template
 	}
 
-	@RequestMapping(method = RequestMethod.GET, path = "/r/@chipId{/@date}")
+	@RequestMapping(method = RequestMethod.GET, path = "/{chipId}")
+	public String listFiles(
+			@PathVariable(value = "chipId") String chipId,
+			Map<String, Object> model) {
+		model.put("message", "ESP8266 Page");
+		model.put("baseUrl", "/esp8266");
+		try {
+			List<String> filenames = espFileService.listFiles(chipId);
+			model.put("filenames", filenames);
+		} catch (IOException e) {
+			LOG.error(e, e);
+		}
+		return "esp8266"; // Thymeleaf template		
+	}
+
+	@RequestMapping(method = RequestMethod.GET, path = "/{chipId}/{filename}")
 	public @ResponseBody List<Esp8266Data> read(
-			@PathParam(value = "chipId") String chipId,
-			@PathParam(value = "date") String date,
+			@PathVariable(value = "chipId") String chipId,
+			@PathVariable(value = "filename") String filename,
 			Map<String, Object> model) throws Exception {
 
 		if (StringUtils.isEmpty(chipId)) {
 			throw new Exception("<h1>Please provide chipId</h1>");
 		}
-		if (StringUtils.isEmpty(date)) {
-			date = WebgpioConstants.dateFormatYYYYMMDD.format(new Date());
-		}
 
-		String chipName = chipId + "_" + date;
-		FileSystemResource resource = new FileSystemResource(IEspFileService.ESP_DATA_DIR_PATH + File.separator + chipName);
+		FileSystemResource resource = new FileSystemResource(IEspFileService.ESP_DATA_DIR_PATH + File.separator + filename + ".txt");
 		if (resource == null || !resource.exists()) {
-			throw new Exception("<h1>Chip name does not exist " + chipName + "</h1>");
+			throw new Exception("<h1>Chip name does not exist " + filename + "</h1>");
 		}
 		List<Esp8266Data> data = espFileService.readFile(resource.getFile());
 		model.put("message", "Data has been read");
 		return data;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, path = "/w/@chipId/@type/@heapDump/@data")
+	@RequestMapping(method = RequestMethod.GET, path = "/w/{chipId}/{type}/{heapDump}/{data}")
 	public @ResponseBody void write(
-			@PathParam(value = "chipId") String chipId,
-			@PathParam(value = "type") String type,
-			@PathParam(value = "heapDump") String heapDump,
-			@PathParam(value = "data") String data,
+			@PathVariable(value = "chipId") String chipId,
+			@PathVariable(value = "type") String type,
+			@PathVariable(value = "heapDump") String heapDump,
+			@PathVariable(value = "data") String data,
 			HttpServletRequest request) throws Exception {
 
 		String date = WebgpioConstants.dateFormatYYYYMMDD.format(new Date());
