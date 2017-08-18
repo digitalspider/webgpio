@@ -37,6 +37,9 @@
 			<p>Pin=<b th:text="${pin}">{pin}</b> and PinRequest=<b th:text="${pinRequest}">{pinRequest}</b></p>
 			<p>Action was to set <b th:text="${action}">N/A</b></p>
 			<h1>PINS</h1>
+			<div th:each="data, row: ${datas}" th:with="numList=${#strings.listSplit('3,2,1,0', ',')}" th:if="${row.current} % 4 == 0" class="span3">
+				<span th:each="num : ${numList}" th:with="dataIndex=(${row.index} - ${num})" th:text="${datas[dataIndex]}">data</span>
+			</div>
 			<table border='1'>
 				<tr>
 					<th:block th:each="modelPin : ${modelPins}">
