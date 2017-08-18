@@ -1,3 +1,15 @@
+#Eclipse files
+.project
+.classpath
+.settings
+
+#Build folders
+build
+target
+bin
+logs
+gradle
+
 # Compiled class file
 *.class
 
