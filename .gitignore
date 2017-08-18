@@ -4,6 +4,7 @@
 .settings
 
 #Build folders
+.gradle
 build
 target
 bin

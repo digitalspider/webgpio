@@ -25,6 +25,11 @@ public class Esp8266Controller {
 	@Autowired
 	private IEspFileService espFileService;
 
+	@RequestMapping(method = RequestMethod.GET, path = "")
+	public @ResponseBody String listFiles() {
+		return new String("list of files");
+	}
+
 	@RequestMapping(method = RequestMethod.GET, path = "/r/@chipId{/@date}")
 	public @ResponseBody List<Esp8266Data> read(
 			@PathParam(value = "chipId") String chipId,
