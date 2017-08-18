@@ -25,9 +25,12 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.6.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-actuator:1.5.6.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf:1.5.6.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-spring-boot-devtools:1.5.6.RELEASE")
+    compile("org.webjars:bootstrap:3.3.7")
+    testCompile("org.springframework.boot:spring-boot-starter-test:1.5.6.RELEASE")
     testCompile("junit:junit")
 }
 

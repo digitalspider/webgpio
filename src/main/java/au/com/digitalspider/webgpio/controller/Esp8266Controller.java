@@ -2,6 +2,7 @@ package au.com.digitalspider.webgpio.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
@@ -27,14 +28,16 @@ public class Esp8266Controller {
 	private IEspFileService espFileService;
 
 	@RequestMapping(method = RequestMethod.GET, path = "")
-	public @ResponseBody String listFiles() {
-		return new String("list of files");
+	public String listFiles(Map<String,Object> model) {
+		model.put("message","ESP8266 Page");
+		return "esp8266"; // Thymeleaf template
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/r/@chipId{/@date}")
 	public @ResponseBody List<Esp8266Data> read(
 			@PathParam(value = "chipId") String chipId,
-			@PathParam(value = "date") String date) throws Exception {
+			@PathParam(value = "date") String date,
+			Map<String,Object> model) throws Exception {
 
 		if (StringUtils.isEmpty(chipId)) {
 			throw new Exception("<h1>Please provide chipId</h1>");
@@ -49,6 +52,7 @@ public class Esp8266Controller {
 			throw new Exception("<h1>Chip name does not exist " + chipName + "</h1>");
 		}
 		List<Esp8266Data> data = espFileService.readFile(resource.getFile());
+		model.put("message","Data has been read");
 		return data;
 	}
 
