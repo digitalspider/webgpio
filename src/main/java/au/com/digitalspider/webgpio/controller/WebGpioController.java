@@ -66,6 +66,7 @@ public class WebGpioController implements InitializingBean {
 	@RequestMapping(method = RequestMethod.GET, path = "")
 	public String listFiles(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		model.put("message", "GPIO Page");
+		model.put("baseUrl", Util.getBaseUrl(request));
 		try {
 			LOG.info("pathinfo=" + request.getPathInfo());
 			String[] pathParts = Util.getPathParts(request);

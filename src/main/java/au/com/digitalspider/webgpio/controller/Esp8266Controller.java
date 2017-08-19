@@ -26,6 +26,7 @@ import au.com.digitalspider.webgpio.WebgpioConstants;
 import au.com.digitalspider.webgpio.bean.Esp8266Data;
 import au.com.digitalspider.webgpio.handler.AbstractOutputHandler;
 import au.com.digitalspider.webgpio.service.IEspFileService;
+import au.com.digitalspider.webgpio.service.IOutputHandlerService;
 
 @Controller
 @RequestMapping("/esp8266")
@@ -36,12 +37,15 @@ public class Esp8266Controller implements InitializingBean {
 	@Autowired
 	private IEspFileService espFileService;
 
+	@Autowired
+	private IOutputHandlerService outputHandlerService;
+
 	private Map<String, List<AbstractOutputHandler>> handlersMap = new HashMap<>();
 
 	@RequestMapping(method = RequestMethod.GET, path = "")
-	public String listFiles(Map<String, Object> model) {
+	public String listFiles(Map<String, Object> model, HttpServletRequest request) {
 		model.put("message", "ESP8266 Page");
-		model.put("baseUrl", "/esp8266");
+		model.put("baseUrl", Util.getBaseUrl(request));
 		try {
 			List<String> filenames = espFileService.listFiles(null);
 			model.put("filenames", filenames);
@@ -70,8 +74,10 @@ public class Esp8266Controller implements InitializingBean {
 	public @ResponseBody List<Esp8266Data> read(
 			@PathVariable(value = "chipId") String chipId,
 			@PathVariable(value = "filename") String filename,
-			Map<String, Object> model) throws Exception {
+			Map<String, Object> model,
+			HttpServletRequest request) throws Exception {
 
+		model.put("baseUrl", Util.getBaseUrl(request));
 		if (StringUtils.isEmpty(chipId)) {
 			throw new Exception("<h1>Please provide chipId</h1>");
 		}
@@ -91,7 +97,10 @@ public class Esp8266Controller implements InitializingBean {
 			@PathVariable(value = "type") String type,
 			@PathVariable(value = "heapDump") String heapDump,
 			@PathVariable(value = "data") String data,
-			HttpServletRequest request) throws Exception {
+			HttpServletRequest request,
+			Map<String, Object> model) throws Exception {
+
+		model.put("baseUrl", Util.getBaseUrl(request));
 
 		String date = WebgpioConstants.dateFormatYYYYMMDD.format(new Date());
 		String time = WebgpioConstants.dateFormatHHMMSS.format(new Date());
@@ -121,9 +130,10 @@ public class Esp8266Controller implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Resource resource = new FileSystemResource("handlers.xml");
-		if (resource != null && resource.exists()) {
-			handlersMap = Util.readHandlerConfigFile(resource.getFile());
-		}
+		handlersMap = outputHandlerService.readHandlerConfigFile();
+	}
+
+	public void setOutputHandlerService(IOutputHandlerService outputHandlerService) {
+		this.outputHandlerService = outputHandlerService;
 	}
 }

@@ -8,10 +8,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -24,13 +21,8 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
 import au.com.digitalspider.webgpio.bean.Esp8266Data;
-import au.com.digitalspider.webgpio.handler.AbstractOutputHandler;
 
 /**
  * Hello world!
@@ -134,23 +126,6 @@ public class Util {
 		return ve;
 	}
 
-	/**
-	 * Load the handlers.xml file as per "handler.config" using {@link #getConfigFile},
-	 * and then call {@link AbstractOutputHandler#readHandlerConfigFile(File)} to do actual file parsing.
-	 *
-	 * @param servletConfig
-	 * @return
-	 * @throws IOException
-	 */
-	public static Map<String, List<AbstractOutputHandler>> setupHandlers(ServletConfig servletConfig) throws Exception {
-		List<File> files = getConfigFiles(servletConfig, "handler.config");
-		Map<String, List<AbstractOutputHandler>> handlerMap = new HashMap<String, List<AbstractOutputHandler>>();
-		for (File file : files) {
-			handlerMap.putAll(readHandlerConfigFile(file));
-		}
-		return handlerMap;
-	}
-
 	public static String getBaseUrl(HttpServletRequest request) {
 //		System.out.println("request="+request);
 //		System.out.println("request.getPathInfo()="+request.getPathInfo());
@@ -237,101 +212,6 @@ public class Util {
 			}
 		}
 		return content;
-	}
-
-	/**
-	 * Static method for reading the handlers.xml config file.
-	 *
-	 * This class uses reflection to create the <handler> elements of type {@link AbstractOutputHandler}.
-	 *
-	 * Sample expected content
-	 * {@code
-	 * <handlers>
-	 * 	<sensor type="dist">
-	 * 		<handler name="rawoutput" class="au.com.digitalspider.handler.RawOutputHandler">
-	 * 			<param name="velocity.template">outputRawTemplate.vm</param>
-	 * 			<param name="file.suffix">_raw.txt</param>
-	 * 		</handler>
-	 * 	</sensor>
-	 * </handlers>
-	 * }
-	 * 
-	 * @param file
-	 * @return
-	 * @throws Exception
-	 */
-	public static Map<String, List<AbstractOutputHandler>> readHandlerConfigFile(File file) throws Exception {
-		Map<String, List<AbstractOutputHandler>> handlersMap = new HashMap<>();
-
-		SAXReader reader = new SAXReader();
-		Document doc = reader.read(file);
-		Element root = doc.getRootElement();
-		String eleName = root.getName();
-		if (eleName == null || !eleName.equals("handlers")) {
-			throw new Exception("Invalid XML. Root element is not called <handlers>, but <" + eleName + ">");
-		}
-
-		for (Iterator<Element> sensorElements = root.elementIterator(); sensorElements.hasNext();) {
-			Element sensorElement = sensorElements.next();
-			eleName = sensorElement.getName();
-			if (eleName == null || !eleName.equals("sensor")) {
-				throw new Exception("Invalid XML. Element is not called <sensor>, but <" + eleName + ">");
-			}
-			String type = sensorElement.attributeValue("type");
-
-			List<AbstractOutputHandler> handlers = new ArrayList<AbstractOutputHandler>();
-			handlersMap.put(type, handlers);
-
-			for (Iterator<Element> handlerElements = sensorElement.elementIterator(); handlerElements.hasNext();) {
-				Element handlerElement = handlerElements.next();
-				eleName = handlerElement.getName();
-				if (eleName == null || !eleName.equals("handler")) {
-					throw new Exception("Invalid XML. Element is not called <handler>, but <" + eleName + ">");
-				}
-
-				// Get name and class attributes
-				String handlerName = null;
-				String handlerClassName = null;
-				AbstractOutputHandler handler = null;
-				for (Iterator<Attribute> handlerAttributes = handlerElement.attributeIterator(); handlerAttributes.hasNext();) {
-					Attribute att = handlerAttributes.next();
-					if (att.getName().equals("name")) {
-						handlerName = att.getValue();
-					}
-					else if (att.getName().equals("class")) {
-						handlerClassName = att.getValue();
-					}
-				}
-				if (handlerName == null || handlerName.trim().length() == 0 || handlerClassName == null || handlerClassName.trim().length() == 0) {
-					throw new Exception("handler does not have the required name='' and class='' attributes defined");
-				}
-				// Create new handler
-				Class<?> clazz = Class.forName(handlerClassName);
-				handler = (AbstractOutputHandler) clazz.newInstance();
-				if (handler == null) {
-					throw new Exception("handler name=" + handlerName + ", class=" + handlerClassName + " could not be initialised");
-				}
-				handler.setName(handlerName);
-				handlers.add(handler);
-				log.debug("Handler created " + handler);
-
-				for (Iterator<Element> paramElements = handlerElement.elementIterator(); paramElements.hasNext();) {
-					Element paramElement = paramElements.next();
-					eleName = paramElement.getName();
-					if (eleName == null || !eleName.equals("param")) {
-						throw new Exception("Invalid XML. Element is not called <param>, but <" + eleName + ">");
-					}
-
-					String paramName = paramElement.attributeValue("name");
-					String paramValue = paramElement.getStringValue();
-					if (paramName != null && paramName.trim().length() > 0 && paramValue != null && paramValue.trim().length() > 0) {
-						log.debug("  with property " + paramName + "=" + paramValue);
-						handler.getProperties().put(paramName, paramValue);
-					}
-				}
-			}
-		}
-		return handlersMap;
 	}
 
 	public static VelocityContext getDefaultVelocityContext() {
