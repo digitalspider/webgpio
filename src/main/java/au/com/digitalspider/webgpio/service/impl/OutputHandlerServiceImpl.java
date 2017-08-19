@@ -117,6 +117,7 @@ public class OutputHandlerServiceImpl implements IOutputHandlerService {
 					throw new Exception("handler name=" + handlerName + ", class=" + handlerClassName + " could not be initialised");
 				}
 				handler.setName(handlerName);
+				handler.setType(type);
 				handlers.add(handler);
 				LOG.debug("Handler created " + handler);
 
@@ -137,6 +138,21 @@ public class OutputHandlerServiceImpl implements IOutputHandlerService {
 			}
 		}
 		return handlersMap;
+	}
+
+	@Override
+	public void callHandlers(List<AbstractOutputHandler> handlers) {
+		if (handlers != null) {
+			for (AbstractOutputHandler handler : handlers) {
+				try {
+					LOG.debug("Calling handler " + handler + " START");
+					handler.call();
+					LOG.debug("Calling handler " + handler + " DONE");
+				} catch (Exception e) {
+					LOG.error("Error in handler " + handler + ". " + e, e);
+				}
+			}
+		}
 	}
 
 }

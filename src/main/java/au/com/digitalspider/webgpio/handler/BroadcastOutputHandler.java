@@ -21,8 +21,8 @@ public class BroadcastOutputHandler extends AbstractOutputHandler {
 	protected String[] destinations;
 
 	@Override
-	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId, String type, String heap, String... values) {
-		super.init(request, response, ve, ipAddress, chipId, type, heap, values);
+	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId) {
+		super.init(request, response, ve, ipAddress, chipId);
 
 		String destParam = properties.getProperty(PARAM_DESTINATION);
 		if (destParam != null && destParam.trim().length() > 0) {
@@ -34,7 +34,7 @@ public class BroadcastOutputHandler extends AbstractOutputHandler {
 	public String call() throws Exception {
 		log.debug("call() at " + this);
 
-		if (heap.length() > 0 && values != null && values.length > 0 && values[0].trim().length() > 0) {
+		if (getData() != null) {
 			if (destinations != null && request != null) {
 				for (String destination : destinations) {
 					String url = request.getRequestURL().toString();
@@ -43,8 +43,7 @@ public class BroadcastOutputHandler extends AbstractOutputHandler {
 						log.debug("host=" + host + " destination=" + destination);
 						String newUrl = url.replace(host, destination);
 						CloseableHttpResponse response = null;
-						try {
-							CloseableHttpClient client = HttpClients.createDefault();
+						try (CloseableHttpClient client = HttpClients.createDefault()) {
 							HttpGet httpget = new HttpGet(newUrl);
 							response = client.execute(httpget);
 							StatusLine statusLine = response.getStatusLine();

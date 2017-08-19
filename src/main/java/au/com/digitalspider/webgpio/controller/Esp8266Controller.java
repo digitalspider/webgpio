@@ -119,9 +119,7 @@ public class Esp8266Controller implements InitializingBean {
 		}
 		espFileService.writeToFile(resource.getFile(), espData);
 
-		for (AbstractOutputHandler handler : handlersMap.get(type)) {
-			//handler.call();
-		}
+		outputHandlerService.callHandlers(handlersMap.get(type));
 	}
 
 	public void setEspFileService(IEspFileService espFileService) {

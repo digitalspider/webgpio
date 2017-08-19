@@ -17,9 +17,8 @@ public class RawOutputHandler extends AbstractOutputHandler {
 	protected String fileSuffix;
 
 	@Override
-	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId,
-			String type, String heap, String... values) {
-		super.init(request, response, ve, ipAddress, chipId, type, heap, values);
+	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId) {
+		super.init(request, response, ve, ipAddress, chipId);
 		template = properties.getProperty(PARAM_TEMPLATE, DEFAULT_TEMPLATE);
 		fileSuffix = properties.getProperty(PARAM_FILESUFFIX, DEFAULT_FILESUFFIX);
 	}
@@ -28,15 +27,13 @@ public class RawOutputHandler extends AbstractOutputHandler {
 	public String call() throws Exception {
 		log.debug("call() at " + this);
 
-		if (heap.length() > 0 && values != null && values.length > 0 && values[0].trim().length() > 0) {
-
+		if (getData() != null) {
 			Date now = new Date();
 			String day = DFDAY.format(now);
 			String time = DFTIM.format(now);
 
-			String result = day + DELIM + time + DELIM + ipAddress + DELIM + heap + DELIM + values[0];
-			for (int i = 1; i < values.length; i++) {
-				String value = values[i];
+			String result = day + DELIM + time + DELIM + ipAddress + DELIM + getData().getHeapDump() + DELIM + getData().getValue();
+			for (String value : getData().getValues()) {
 				if (value != null && value.trim().length() > 0) {
 					result += DELIM + value;
 				}
@@ -47,15 +44,9 @@ public class RawOutputHandler extends AbstractOutputHandler {
 			File file = getOutputFile(fileSuffix);
 			log.debug("file=" + file.getAbsolutePath());
 
-			FileWriter fout = null;
-			try {
-				fout = new FileWriter(file, true);
+			try (FileWriter fout = new FileWriter(file, true)) {
 				fout.append(result + "\n");
-			} finally {
-				if (fout != null) {
-					fout.flush();
-					fout.close();
-				}
+				fout.flush();
 			}
 		}
 

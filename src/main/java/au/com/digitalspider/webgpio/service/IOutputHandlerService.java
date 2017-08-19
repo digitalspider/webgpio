@@ -16,4 +16,6 @@ public interface IOutputHandlerService {
 	public Map<String, List<AbstractOutputHandler>> readHandlerConfigFile() throws Exception;
 
 	public Map<String, List<AbstractOutputHandler>> readHandlerConfigFile(File file) throws Exception;
+
+	public void callHandlers(List<AbstractOutputHandler> handlers);
 }

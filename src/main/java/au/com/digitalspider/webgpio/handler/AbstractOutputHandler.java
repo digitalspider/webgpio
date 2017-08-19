@@ -16,6 +16,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import au.com.digitalspider.webgpio.Util;
+import au.com.digitalspider.webgpio.bean.Esp8266Data;
 import au.com.digitalspider.webgpio.service.IEspFileService;
 
 public abstract class AbstractOutputHandler implements Callable<String> {
@@ -38,18 +39,14 @@ public abstract class AbstractOutputHandler implements Callable<String> {
 	protected String ipAddress;
 	protected String chipId;
 	protected String type;
-	protected String heap;
-	protected String[] values;
+	private Esp8266Data data;
 
-	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId, String type, String heap, String... values) {
+	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId) {
 		this.request = request;
 		this.response = response;
 		this.ve = ve;
 		this.ipAddress = ipAddress;
 		this.chipId = chipId;
-		this.type = type;
-		this.heap = heap;
-		this.values = values;
 	}
 
 	protected File getOutputFile(String fileSuffix) throws IOException {
@@ -76,9 +73,9 @@ public abstract class AbstractOutputHandler implements Callable<String> {
 		context.put("ip", ipAddress);
 		context.put("chipid", chipId);
 		context.put("type", type);
-		context.put("heap", heap);
-		for (int i = 0; i < values.length; i++) {
-			String value = values[i];
+		context.put("heap", data.getHeapDump());
+		int i = 0;
+		for (String value : data.getValues()) {
 			if (i == 0) {
 				context.put("value", value);
 			}
@@ -108,5 +105,21 @@ public abstract class AbstractOutputHandler implements Callable<String> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Esp8266Data getData() {
+		return data;
+	}
+
+	public void setData(Esp8266Data data) {
+		this.data = data;
 	}
 }

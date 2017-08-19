@@ -25,9 +25,9 @@ public class InterruptOutputHandler extends RawOutputHandler {
 	protected int historySize;
 
 	@Override
-	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId, String type, String heap, String... values) {
+	public void init(HttpServletRequest request, HttpServletResponse response, VelocityEngine ve, String ipAddress, String chipId) {
 		DEFAULT_FILESUFFIX = "_int.txt";
-		super.init(request, response, ve, ipAddress, chipId, type, heap, values);
+		super.init(request, response, ve, ipAddress, chipId);
 		historySize = Integer.parseInt(properties.getProperty(PARAM_HISTORY_LENGTH, DEFAULT_HISTORY_LENGTH));
 	}
 
@@ -35,13 +35,13 @@ public class InterruptOutputHandler extends RawOutputHandler {
 	public String call() throws Exception {
 		log.debug("call() at " + this);
 
-		if (heap.length() > 0 && values != null && values.length > 0 && values[0].trim().length() > 0) {
+		if (getData() != null) {
 			Float[] historyData = historyDataMap.get(chipId);
 			if (historyData == null) {
 				historyData = new Float[historySize];
 				historyDataMap.put(chipId, historyData);
 			}
-			String distanceString = values[0];
+			String distanceString = getData().getValue();
 			Float distance = Float.parseFloat(distanceString);
 			Float average = 0.0F;
 
