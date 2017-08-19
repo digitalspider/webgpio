@@ -72,17 +72,17 @@ public class WebGpioController implements InitializingBean {
 			String[] pathParts = Util.getPathParts(request);
 			LOG.info("PathParts=" + pathParts);
 
-			List<ModelPin> modelPins = new ArrayList<>();
-			for (int i = 0; i < 10; i++) {
-				ModelPin pin = new ModelPin();
-				pin.setPinId(i + 1);
-				pin.setEdge("e");
-				pin.setState("s");
-				modelPins.add(pin);
-			}
-			model.put("modelPins", modelPins);
-
 			if (WebgpioConstants.isWindows) {
+				List<ModelPin> modelPins = new ArrayList<>();
+				for (int i = 0; i < 10; i++) {
+					ModelPin pin = new ModelPin();
+					pin.setPinId(i + 1);
+					pin.setEdge("e");
+					pin.setState("s");
+					modelPins.add(pin);
+				}
+				model.put("modelPins", modelPins);
+
 				return "webgpio"; // Thymeleaf template				
 			}
 

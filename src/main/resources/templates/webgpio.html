@@ -37,24 +37,15 @@
 			<p>Pin=<b th:text="${pin}">{pin}</b> and PinRequest=<b th:text="${pinRequest}">{pinRequest}</b></p>
 			<p>Action was to set <b th:text="${action}">N/A</b></p>
 			<h1>PINS</h1>
-			<div th:each="modelPin, row : ${modelPins}" th:with="numList=${#strings.listSplit('4,3,2,1,0', ',')}" th:if="${row.current.pinId} % 5 == 0" class="span3">
-				Pin=<span th:text="${modelPin.pinId}">{pinId}</span> r=<span th:text="${row.current}">{row}</span>
-			</div>
-			<!--
-			<div th:each="modelPin, row : ${modelPins}" th:with="numList=${#strings.listSplit('4,3,2,1,0', ',')}" th:if="${row.current} % 5 == 0" class="span3">
-				<span th:each="num : ${numList}" th:with="dataIndex=(${row.index} - ${num})" th:text="${pin.pinId}">data</span>
-			</div>
-			-->
 			<table border='1'>
-				<tr>
-					<th:block th:each="modelPin : ${modelPins}">
+				<th:block th:each="modelPin, row : ${modelPins}">
+					<tr th:if="${row.index} % 4 == 0"/>
 					<td>
 						<div th:strong="${modelPin.selected}">
 							Pin=<span th:text="${modelPin.pinId}">{pinId}</span> [<span th:text="${modelPin.mode}">{mode}</span>] [<a href="#" th:href="'/webgpio/'+${modelPin.pinId}+'/toggle'"><span th:text="${modelPin.state}">{state}</span></a>] [<span th:text="${modelPin.edge}">{edge}</span>]
 						</div>
 					</td>
-					</th:block>
-				</tr>
+				</th:block>
 			</table>
 		</div>
 
